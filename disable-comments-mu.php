@@ -43,7 +43,6 @@ class Disable_Comments_MU {
 
 		// Filters for the admin only
 		if( is_admin() ) {
-			add_action( 'admin_print_footer_scripts', array( $this, 'discussion_notice' ) );
 			add_action( 'admin_menu', array( $this, 'filter_admin_menu' ), 9999 );	// do this as late as possible
 			add_action( 'admin_head', array( $this, 'hide_dashboard_bits' ) );
 			add_action( 'wp_dashboard_setup', array( $this, 'filter_dashboard' ) );
@@ -100,18 +99,6 @@ class Disable_Comments_MU {
 	function remove_network_comment_links( $wp_admin_bar ) {
 		foreach( (array) $wp_admin_bar->user->blogs as $blog )
 			$wp_admin_bar->remove_menu( 'blog-' . $blog->userblog_id . '-c' );
-	}
-	
-	function discussion_notice(){
-		if( get_current_screen()->id == 'options-discussion' ) {
-?>
-<script>
-jQuery(document).ready(function($){
-	$(".wrap h2").first().after( <?php echo json_encode( '<div style="color: #900"><p>' . __( 'Note: The <em>Disable Comments</em> plugin is currently active, and comments are completely disabled. Many of the settings below will not be applicable.', 'disable-comments' ) . '</p></div>' );?> );
-});
-</script>
-<?php
-		}
 	}
 	
 	function filter_admin_menu(){		
