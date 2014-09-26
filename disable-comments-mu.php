@@ -1,14 +1,12 @@
 <?php
 /*
-Plugin Name: Disable Comments (Must-Use version)
+Plugin Name: Disable Comments (Must Use version)
 Plugin URI: http://wordpress.org/extend/plugins/disable-comments/
 Description: Disables all WordPress comment functionality on the entire network.
 Version: 1.1.1
 Author: Samir Shah
 Author URI: http://rayofsolaris.net/
 License: GPL2
-Text Domain: disable-comments
-Domain Path: /languages/
 */
 
 if( !defined( 'ABSPATH' ) )
