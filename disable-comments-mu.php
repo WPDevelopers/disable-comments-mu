@@ -15,8 +15,6 @@ if( !defined( 'ABSPATH' ) )
 	exit;
 
 class Disable_Comments_MU {
-	private $modified_types = array();
-
 	function __construct() {
 		// these need to happen now
 		add_action( 'widgets_init', array( $this, 'disable_rc_widget' ) );
@@ -37,7 +35,6 @@ class Disable_Comments_MU {
 			foreach( $types as $type ) {
 				// we need to know what native support was for later
 				if( post_type_supports( $type, 'comments' ) ) {
-					$this->modified_types[] = $type;
 					remove_post_type_support( $type, 'comments' );
 					remove_post_type_support( $type, 'trackbacks' );
 				}
@@ -148,7 +145,6 @@ jQuery(document).ready(function($){
 	}
 	
 	function filter_comment_status( $open, $post_id ) {
-		$post = get_post( $post_id );
 		return false;
 	}
 	
