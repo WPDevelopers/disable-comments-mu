@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Disable Comments (Must Use version)
-Plugin URI: http://wordpress.org/extend/plugins/disable-comments/
+Plugin URI: https://github.com/solarissmoke/disable-comments-mu
 Description: Disables all WordPress comment functionality on the entire network.
 Version: 1.1.1
 Author: Samir Shah
