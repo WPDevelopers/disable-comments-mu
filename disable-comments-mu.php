@@ -7,6 +7,7 @@ Version: 1.1.1
 Author: Samir Shah
 Author URI: http://rayofsolaris.net/
 License: GPL2
+GitHub Plugin URI: https://github.com/solarissmoke/disable-comments-mu
 */
 
 if( !defined( 'ABSPATH' ) )
