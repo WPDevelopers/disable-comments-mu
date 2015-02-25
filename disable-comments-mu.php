@@ -52,6 +52,14 @@ class Disable_Comments_MU {
 			add_action( 'template_redirect', array( $this, 'check_comment_template' ) );
 			add_filter( 'comments_open', array( $this, 'filter_comment_status' ), 20, 2 );
 			add_filter( 'pings_open', array( $this, 'filter_comment_status' ), 20, 2 );
+			
+			// remove comments links from feed
+			add_filter('post_comments_feed_link', '__return_false', 10, 1);
+			add_filter('comments_link_feed', '__return_false', 10, 1);
+			add_filter('comment_link', '__return_false', 10, 1);
+			
+			// remove comment count from feed
+			add_filter('get_comments_number', '__return_false', 10, 2);
 		}
 	}
 
