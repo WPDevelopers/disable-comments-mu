@@ -62,9 +62,9 @@ class Disable_Comments_MU {
 			// remove comment count from feed
 			add_filter('get_comments_number', '__return_false', 10, 2);
 			
-			// remove comment feed from head
-			remove_action( 'wp_head', 'feed_links', 2 );	
-			add_action( 'wp_head', array( $this, 'feed_links' ) );
+			// run when wp_head executes
+			add_action('wp_head', array( $this, 'before_wp_head' ), 0 );
+		
 		}
 	}
 
@@ -75,7 +75,7 @@ class Disable_Comments_MU {
 			// Remove comment-reply script for themes that include it indiscriminately
 			wp_deregister_script( 'comment-reply' );
 			
-			// remove feed action
+			// Remove feed action
 			remove_action( 'wp_head', 'feed_links_extra', 3 );
 		}
 	}
@@ -91,6 +91,7 @@ class Disable_Comments_MU {
 	
 	function filter_query() {
 		if( is_comment_feed() ) {
+			// we are inside a comment feed
 			wp_die( __( 'Comments are closed.' ), '', array( 'response' => 403 ) );
 		}
 	}
@@ -149,6 +150,16 @@ class Disable_Comments_MU {
 		unregister_widget( 'WP_Widget_Recent_Comments' );
 	}
 	
+	function before_wp_head( $args = array() ) {
+		// if wp_head feed_links has not been tampered with (WP 4.1.1)
+		if (has_action('wp_head', 'feed_links') == 2) {
+			// replace it with a modified version
+			remove_action( 'wp_head', 'feed_links', 2 );	
+			add_action( 'wp_head', array( $this, 'feed_links' ) );
+		}
+	}
+	
+	// replaces feed_links function, WP 4.1.1
 	function feed_links( $args = array() ) {
 		if ( !current_theme_supports('automatic-feed-links') )
 			return;
