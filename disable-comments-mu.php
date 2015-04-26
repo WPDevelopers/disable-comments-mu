@@ -52,6 +52,17 @@ class Disable_Comments_MU {
 			add_action( 'template_redirect', array( $this, 'check_comment_template' ) );
 			add_filter( 'comments_open', array( $this, 'filter_comment_status' ), 20, 2 );
 			add_filter( 'pings_open', array( $this, 'filter_comment_status' ), 20, 2 );
+
+			// remove comments links from feed
+			add_filter('post_comments_feed_link', '__return_false', 10, 1);
+			add_filter('comments_link_feed', '__return_false', 10, 1);
+			add_filter('comment_link', '__return_false', 10, 1);
+
+			// remove comment count from feed
+			add_filter('get_comments_number', '__return_false', 10, 2);
+
+			// run when wp_head executes
+			add_action('wp_head', array( $this, 'before_wp_head' ), 0 );
 		}
 	}
 
@@ -61,6 +72,8 @@ class Disable_Comments_MU {
 			add_filter( 'comments_template', array( $this, 'dummy_comments_template' ), 20 );
 			// Remove comment-reply script for themes that include it indiscriminately
 			wp_deregister_script( 'comment-reply' );
+			// Remove feed action
+			remove_action( 'wp_head', 'feed_links_extra', 3 );
 		}
 	}
 
@@ -75,13 +88,8 @@ class Disable_Comments_MU {
 	
 	function filter_query() {
 		if( is_comment_feed() ) {
-			if( isset( $_GET['feed'] ) ) {
-				wp_redirect( remove_query_arg( 'feed' ), 301 );
-				exit;
-			}
-
-			set_query_var( 'feed', '' );	// redirect_canonical will do the rest
-			redirect_canonical();
+			// we are inside a comment feed
+			wp_die( __( 'Comments are closed.' ), '', array( 'response' => 403 ) );
 		}
 	}
 	
@@ -137,6 +145,29 @@ class Disable_Comments_MU {
 	function disable_rc_widget() {
 		// This widget has been removed from the Dashboard in WP 3.8 and can be removed in a future version
 		unregister_widget( 'WP_Widget_Recent_Comments' );
+	}
+
+	function before_wp_head( $args = array() ) {
+		// if wp_head feed_links has not been tampered with (WP 4.1.1)
+		if (has_action('wp_head', 'feed_links') == 2) {
+			// replace it with a modified version
+			remove_action( 'wp_head', 'feed_links', 2 );
+			add_action( 'wp_head', array( $this, 'feed_links' ) );
+		}
+	}
+
+	// replaces feed_links function, WP 4.1.1
+	function feed_links( $args = array() ) {
+		if ( !current_theme_supports('automatic-feed-links') )
+			return;
+		$defaults = array(
+			/* translators: Separator between blog name and feed type in feed links */
+			'separator'	=> _x('&raquo;', 'feed link'),
+			/* translators: 1: blog title, 2: separator (raquo) */
+			'feedtitle'	=> __('%1$s %2$s Feed'),
+		);
+		$args = wp_parse_args( $args, $defaults );
+		echo '<link rel="alternate" type="' . feed_content_type() . '" title="' . esc_attr( sprintf( $args['feedtitle'], get_bloginfo('name'), $args['separator'] ) ) . '" href="' . esc_url( get_feed_link() ) . "\" />\n";
 	}
 }
 
