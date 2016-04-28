@@ -19,15 +19,15 @@ class Disable_Comments_MU {
 		add_action( 'widgets_init', array( $this, 'disable_rc_widget' ) );
 		add_filter( 'wp_headers', array( $this, 'filter_wp_headers' ) );
 		add_action( 'template_redirect', array( $this, 'filter_query' ), 9 );	// before redirect_canonical
-		
+
 		// Admin bar filtering has to happen here since WP 3.6
 		add_action( 'template_redirect', array( $this, 'filter_admin_bar' ) );
 		add_action( 'admin_init', array( $this, 'filter_admin_bar' ) );
-                
+
 		// these can happen later
-		add_action( 'wp_loaded', array( $this, 'setup_filters' ) );	
+		add_action( 'wp_loaded', array( $this, 'setup_filters' ) );
 	}
-	
+
 	function setup_filters(){
 		$types = array_keys( get_post_types( array( 'public' => true ), 'objects' ) );
 		if( !empty( $types ) ) {
@@ -85,14 +85,14 @@ class Disable_Comments_MU {
 		unset( $headers['X-Pingback'] );
 		return $headers;
 	}
-	
+
 	function filter_query() {
 		if( is_comment_feed() ) {
 			// we are inside a comment feed
 			wp_die( __( 'Comments are closed.' ), '', array( 'response' => 403 ) );
 		}
 	}
-	
+
 	function filter_admin_bar() {
 		if( is_admin_bar_showing() ) {
 			// Remove comments links from admin bar
@@ -102,13 +102,16 @@ class Disable_Comments_MU {
 				add_action( 'admin_bar_menu', array( $this, 'remove_network_comment_links' ), 500 );
 		}
 	}
-	
+
 	function remove_network_comment_links( $wp_admin_bar ) {
-		foreach( (array) $wp_admin_bar->user->blogs as $blog )
-			$wp_admin_bar->remove_menu( 'blog-' . $blog->userblog_id . '-c' );
+		if( is_user_logged_in() ) {
+			foreach( (array) $wp_admin_bar->user->blogs as $blog ) {
+				$wp_admin_bar->remove_menu( 'blog-' . $blog->userblog_id . '-c' );
+			}
+		}
 	}
-	
-	function filter_admin_menu(){		
+
+	function filter_admin_menu(){
 		global $pagenow;
 
 		if ( in_array( $pagenow, array( 'comment.php', 'edit-comments.php', 'options-discussion.php' ) ) ) {
@@ -118,16 +121,16 @@ class Disable_Comments_MU {
 		remove_menu_page( 'edit-comments.php' );
 		remove_submenu_page( 'options-general.php', 'options-discussion.php' );
 	}
-	
+
 	function filter_dashboard(){
 		remove_meta_box( 'dashboard_recent_comments', 'dashboard', 'normal' );
 	}
-	
+
 	function hide_dashboard_bits(){
 		if( 'dashboard' == get_current_screen()->id )
 			add_action( 'admin_print_footer_scripts', array( $this, 'dashboard_js' ) );
 	}
-	
+
 	function dashboard_js(){
 		if( version_compare( $GLOBALS['wp_version'], '3.8', '<' ) ) {
 			// getting hold of the discussion box is tricky. The table_discussion class is used for other things in multisite
@@ -137,11 +140,11 @@ class Disable_Comments_MU {
 			echo '<script> jQuery(function($){ $("#dashboard_right_now .comment-count, #latest-comments").hide(); }); </script>';
 		}
 	}
-	
+
 	function filter_comment_status( $open, $post_id ) {
 		return false;
 	}
-	
+
 	function disable_rc_widget() {
 		// This widget has been removed from the Dashboard in WP 3.8 and can be removed in a future version
 		unregister_widget( 'WP_Widget_Recent_Comments' );
