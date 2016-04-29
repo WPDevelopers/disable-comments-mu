@@ -3,7 +3,7 @@
 Plugin Name: Disable Comments (Must Use version)
 Plugin URI: https://github.com/solarissmoke/disable-comments-mu
 Description: Disables all WordPress comment functionality on the entire network.
-Version: 1.1.1
+Version: 1.1.2
 Author: Samir Shah
 Author URI: http://rayofsolaris.net/
 License: GPL2
@@ -60,6 +60,9 @@ class Disable_Comments_MU {
 
 			// remove comment count from feed
 			add_filter('get_comments_number', '__return_false', 10, 2);
+
+			// Remove feed link from header
+			add_filter( 'feed_links_show_comments_feed', '__return_false' );
 
 			// run when wp_head executes
 			add_action('wp_head', array( $this, 'before_wp_head' ), 0 );
@@ -152,7 +155,8 @@ class Disable_Comments_MU {
 
 	function before_wp_head( $args = array() ) {
 		// if wp_head feed_links has not been tampered with (WP 4.1.1)
-		if (has_action('wp_head', 'feed_links') == 2) {
+		// In WP > 4.4 the feed_links_show_comments_feed filter is used instead.
+		if ( version_compare( $GLOBALS['wp_version'], '4.4', '<' ) && has_action( 'wp_head', 'feed_links' ) == 2 ) {
 			// replace it with a modified version
 			remove_action( 'wp_head', 'feed_links', 2 );
 			add_action( 'wp_head', array( $this, 'feed_links' ) );
@@ -160,6 +164,7 @@ class Disable_Comments_MU {
 	}
 
 	// replaces feed_links function, WP 4.1.1
+	// Not required after WP 4.4
 	function feed_links( $args = array() ) {
 		if ( !current_theme_supports('automatic-feed-links') )
 			return;
