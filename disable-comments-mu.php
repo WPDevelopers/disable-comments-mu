@@ -10,8 +10,9 @@ License: GPL2
 GitHub Plugin URI: https://github.com/solarissmoke/disable-comments-mu
 */
 
-if( !defined( 'ABSPATH' ) )
+if( !defined( 'ABSPATH' ) ) {
 	exit;
+}
 
 class Disable_Comments_MU {
 	function __construct() {
@@ -63,9 +64,6 @@ class Disable_Comments_MU {
 
 			// Remove feed link from header
 			add_filter( 'feed_links_show_comments_feed', '__return_false' );
-
-			// run when wp_head executes
-			add_action('wp_head', array( $this, 'before_wp_head' ), 0 );
 		}
 	}
 
@@ -99,8 +97,7 @@ class Disable_Comments_MU {
 	function filter_admin_bar() {
 		if( is_admin_bar_showing() ) {
 			// Remove comments links from admin bar
-			remove_action( 'admin_bar_menu', 'wp_admin_bar_comments_menu', 50 );	// WP<3.3
-			remove_action( 'admin_bar_menu', 'wp_admin_bar_comments_menu', 60 );	// WP 3.3
+			remove_action( 'admin_bar_menu', 'wp_admin_bar_comments_menu', 60 );
 			if( is_multisite() )
 				add_action( 'admin_bar_menu', array( $this, 'remove_network_comment_links' ), 500 );
 		}
@@ -135,13 +132,7 @@ class Disable_Comments_MU {
 	}
 
 	function dashboard_js(){
-		if( version_compare( $GLOBALS['wp_version'], '3.8', '<' ) ) {
-			// getting hold of the discussion box is tricky. The table_discussion class is used for other things in multisite
-			echo '<script> jQuery(function($){ $("#dashboard_right_now .table_discussion").has(\'a[href="edit-comments.php"]\').first().hide(); }); </script>';
-		}
-		else {
-			echo '<script> jQuery(function($){ $("#dashboard_right_now .comment-count, #latest-comments").hide(); }); </script>';
-		}
+		echo '<script> jQuery(function($){ $("#dashboard_right_now .comment-count, #latest-comments").hide(); }); </script>';
 	}
 
 	function filter_comment_status( $open, $post_id ) {
@@ -151,31 +142,6 @@ class Disable_Comments_MU {
 	function disable_rc_widget() {
 		// This widget has been removed from the Dashboard in WP 3.8 and can be removed in a future version
 		unregister_widget( 'WP_Widget_Recent_Comments' );
-	}
-
-	function before_wp_head( $args = array() ) {
-		// if wp_head feed_links has not been tampered with (WP 4.1.1)
-		// In WP > 4.4 the feed_links_show_comments_feed filter is used instead.
-		if ( version_compare( $GLOBALS['wp_version'], '4.4', '<' ) && has_action( 'wp_head', 'feed_links' ) == 2 ) {
-			// replace it with a modified version
-			remove_action( 'wp_head', 'feed_links', 2 );
-			add_action( 'wp_head', array( $this, 'feed_links' ) );
-		}
-	}
-
-	// replaces feed_links function, WP 4.1.1
-	// Not required after WP 4.4
-	function feed_links( $args = array() ) {
-		if ( !current_theme_supports('automatic-feed-links') )
-			return;
-		$defaults = array(
-			/* translators: Separator between blog name and feed type in feed links */
-			'separator'	=> _x('&raquo;', 'feed link'),
-			/* translators: 1: blog title, 2: separator (raquo) */
-			'feedtitle'	=> __('%1$s %2$s Feed'),
-		);
-		$args = wp_parse_args( $args, $defaults );
-		echo '<link rel="alternate" type="' . feed_content_type() . '" title="' . esc_attr( sprintf( $args['feedtitle'], get_bloginfo('name'), $args['separator'] ) ) . '" href="' . esc_url( get_feed_link() ) . "\" />\n";
 	}
 }
 
