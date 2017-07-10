@@ -1,5 +1,6 @@
 <?php
 use PHPUnit_Framework_TestCase;
+use Brain\Monkey;
 use Brain\Monkey\Functions;
 
 
@@ -8,6 +9,11 @@ class PluginTestCase extends PHPUnit_Framework_TestCase {
     function setUp() {
         parent::setUp();
 		$this->plugin_instance = new Disable_Comments_MU();
+    }
+
+    function tearDown() {
+        Monkey::tearDown();
+        parent::tearDown();
     }
 
 	function test_init_hooks_added() {
@@ -71,7 +77,7 @@ class PluginTestCase extends PHPUnit_Framework_TestCase {
 
     function test_check_comment_template() {
         Functions::when( 'is_singular' )->justReturn( true );
-        Functions::expect( 'deregister_script' )->once()->with( 'comment-reply' );
+        Functions::expect( 'wp_deregister_script' )->once()->with( 'comment-reply' );
         $this->plugin_instance->check_comment_template();
         $this->assertEquals( 20, has_action( 'comments_template', array( $this->plugin_instance, 'dummy_comments_template' ) ) );
         $this->assertFalse(has_action( 'wp_head', 'feed_links_extra' ) );
