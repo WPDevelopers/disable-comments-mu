@@ -44,7 +44,8 @@ class Disable_Comments_MU {
 		// Filters for the admin only
 		if( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'filter_admin_menu' ), 9999 );	// do this as late as possible
-			add_action( 'admin_head-index.php', array( $this, 'dashboard_css' ) );
+			add_action( 'admin_print_styles-index.php', array( $this, 'admin_css' ) );
+			add_action( 'admin_print_styles-profile.php', array( $this, 'admin_css' ) );
 			add_action( 'wp_dashboard_setup', array( $this, 'filter_dashboard' ) );
 			add_filter( 'pre_option_default_pingback_flag', '__return_zero' );
 		}
@@ -126,12 +127,13 @@ class Disable_Comments_MU {
 		remove_meta_box( 'dashboard_recent_comments', 'dashboard', 'normal' );
 	}
 
-	function dashboard_css(){
+	function admin_css(){
 		echo '<style>
 			#dashboard_right_now .comment-count,
 			#dashboard_right_now .comment-mod-count,
 			#latest-comments,
-			#welcome-panel .welcome-comments {
+			#welcome-panel .welcome-comments,
+			.user-comment-shortcuts-wrap {
 				display: none !important;
 			}
 		</style>';

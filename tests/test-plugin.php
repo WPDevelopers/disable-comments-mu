@@ -41,7 +41,8 @@ class PluginTestCase extends PHPUnit_Framework_TestCase {
         $plugin = new Disable_Comments_MU();
         $plugin->setup_filters();
         $this->assertEquals( 9999,  has_action( 'admin_menu', array( $plugin, 'filter_admin_menu' ) ) );
-        $this->assertEquals( 10,  has_action( 'admin_head-index.php', array( $plugin, 'dashboard_css' ) ) );
+        $this->assertEquals( 10,  has_action( 'admin_print_styles-index.php', array( $plugin, 'admin_css' ) ) );
+        $this->assertEquals( 10,  has_action( 'admin_print_styles-profile.php', array( $plugin, 'admin_css' ) ) );
         $this->assertEquals( 10,  has_action( 'wp_dashboard_setup', array( $plugin, 'filter_dashboard' ) ) );
     }
 
