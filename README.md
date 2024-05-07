@@ -1,6 +1,6 @@
 # Disable Comments for WordPress (Must-Use version)
 
-[![Build Status](https://travis-ci.org/solarissmoke/disable-comments-mu.svg?branch=master)](https://travis-ci.org/solarissmoke/disable-comments-mu)
+[![Build Status](https://travis-ci.org/WPDevelopers/disable-comments-mu.svg?branch=master)](https://travis-ci.org/WPDevelopers/disable-comments-mu)
 
 This is the [must-use](http://codex.wordpress.org/Must_Use_Plugins) version of the [Disable Comments](https://wordpress.org/plugins/disable-comments/) WordPress plugin.
 
@@ -12,7 +12,6 @@ If you want to be able to configure the plugin's behaviour, then use the [normal
 
 The following versions of WordPress are supported:
 
-* 4.8.x
-* 4.7.x
-* 4.6.x
-* 4.5.x
+* 6.x
+* 5.x
+* 4.x

@@ -27,6 +27,12 @@ class Disable_Comments_MU {
 
 		// these can happen later
 		add_action( 'wp_loaded', array( $this, 'setup_filters' ) );
+
+		add_action('enqueue_block_editor_assets', array($this, 'filter_gutenberg_blocks'));
+		add_filter('rest_endpoints', array($this, 'filter_rest_endpoints'));
+		add_filter('xmlrpc_methods', array($this, 'disable_xmlrc_comments'));
+		add_filter('rest_pre_insert_comment', array($this, 'disable_rest_API_comments'), 10, 2);
+		add_filter('comments_array', array($this, 'filter_existing_comments'), 20, 2);
 	}
 
 	function setup_filters(){
@@ -146,6 +152,73 @@ class Disable_Comments_MU {
 	function disable_rc_widget() {
 		// This widget has been removed from the Dashboard in WP 3.8 and can be removed in a future version
 		unregister_widget( 'WP_Widget_Recent_Comments' );
+		/**
+		 * The widget has added a style action when it was constructed - which will
+		 * still fire even if we now unregister the widget... so filter that out
+		 */
+		add_filter('show_recent_comments_widget_style', '__return_false');
+	}
+
+	/**
+	 * Determines if scripts should be enqueued
+	 */
+	public function filter_gutenberg_blocks($hook)
+	{
+		// print footer scripts
+		add_action('admin_footer', array($this, 'print_footer_scripts'));
+	}
+
+	/**
+	 * Print footer scripts
+	 */
+	public function print_footer_scripts()
+	{
+		?>
+		<script>
+			wp.domReady(() => {
+				const blockType = 'core/latest-comments';
+				if(wp.blocks && wp.data && wp.data.select('core/blocks').getBlockType( blockType )) {
+					wp.blocks.unregisterBlockType(blockType);
+				}
+			});
+		</script>
+		<?php
+	}
+
+	/**
+	 * Remove the comments endpoint for the REST API
+	 */
+	public function filter_rest_endpoints($endpoints)
+	{
+		if(isset($endpoints['comments'])){
+			unset($endpoints['comments']);
+		}
+		if(isset($endpoints['/wp/v2/comments'])){
+			unset($endpoints['/wp/v2/comments']);
+		}
+		if(isset($endpoints['/wp/v2/comments/(?P<id>[\d]+)'])){
+			unset($endpoints['/wp/v2/comments/(?P<id>[\d]+)']);
+		}
+		return $endpoints;
+	}
+
+	/**
+	 * remove method wp.newComment
+	 */
+	public function disable_xmlrc_comments($methods)
+	{
+		unset($methods['wp.newComment']);
+		return $methods;
+	}
+
+	public function disable_rest_API_comments($prepared_comment, $request)
+	{
+		return;
+	}
+
+	public function filter_existing_comments($comments, $post_id)
+	{
+		return array();
 	}
 }
 

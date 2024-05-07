@@ -1,14 +1,19 @@
 {
-  "name": "solarissmoke/disable-comments-mu",
+  "name": "wpdevelopers/disable-comments-mu",
   "type": "wordpress-muplugin",
   "license": "GPL-2.0",
   "description": "This is the must-use version of the Disable Comments WordPress plugin. Copy the contents of this directory into your mu-plugins directory in order to disable comments on the entire site/network, without any configuration. You should delete all existing comments from the WordPress database before activating this plugin. If you want to be able to configure the plugin's behaviour, then use the normal version.",
-  "homepage": "https://github.com/solarissmoke/disable-comments-mu",
+  "homepage": "https://github.com/WPDevelopers/disable-comments-mu",
   "authors": [
     {
       "name": "Samir Shah",
       "email": "samir@rayofsolaris.net",
       "homepage": "https://github.com/solarissmoke"
+    },
+    {
+      "name": "MD Alimuzzaman Alim",
+      "email": "alimuzzaman.alim@gamil.com",
+      "homepage": "https://github.com/alimuzzaman"
     }
   ],
   "keywords": [
@@ -16,7 +21,7 @@
     "comments"
   ],
   "support": {
-    "issues": "https://github.com/solarissmoke/disable-comments-mu/issues"
+    "issues": "https://github.com/WPDevelopers/disable-comments-mu/issues"
   },
   "require": {
     "php": ">=5.2.4",
@@ -24,5 +29,10 @@
 },
   "require-dev": {
     "brain/monkey": "1.4.2"
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true
+    }
   }
 }
