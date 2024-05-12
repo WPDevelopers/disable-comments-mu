@@ -4,8 +4,8 @@ Plugin Name: Disable Comments (Must Use version)
 Plugin URI: https://github.com/solarissmoke/disable-comments-mu
 Description: Disables all WordPress comment functionality on the entire network.
 Version: 1.1.2
-Author: Samir Shah
-Author URI: http://rayofsolaris.net/
+Author: WPDeveloper
+Author URI: https://wpdeveloper.com
 License: GPL2
 GitHub Plugin URI: https://github.com/solarissmoke/disable-comments-mu
 */
