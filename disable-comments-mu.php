@@ -213,7 +213,7 @@ class Disable_Comments_MU {
 
 	public function disable_rest_API_comments($prepared_comment, $request)
 	{
-		return;
+		return array();
 	}
 
 	public function filter_existing_comments($comments, $post_id)
